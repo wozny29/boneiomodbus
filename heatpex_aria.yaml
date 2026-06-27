@@ -1,7 +1,10 @@
-# =============================================
-# Heatpex Aria Vitale Platinum 450 - Modbus
-# =============================================
-
+# heatpex_aria.yaml - Heatpex Aria Vitale Platinum 450
+uart:
+  - id: heatpex_uart
+    rx_pin: GPIO14
+    tx_pin: GPIO15
+    baud_rate: 9600
+    stop_bits: 1
 
 modbus:
   - id: heatpex_modbus
@@ -17,7 +20,6 @@ modbus_controller:
 
 # ====================== SENSORY ======================
 sensor:
-  # Temperatury
   - platform: modbus_controller
     modbus_controller_id: heatpex_aria
     name: "${device_name} T1 Nawiew"
@@ -40,27 +42,6 @@ sensor:
 
   - platform: modbus_controller
     modbus_controller_id: heatpex_aria
-    name: "${device_name} T3 Zewnętrzna"
-    address: 8
-    register_type: holding
-    value_type: INT16
-    filters: [multiply: 0.1]
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} T4 Wyrzut"
-    address: 9
-    register_type: holding
-    value_type: INT16
-    filters: [multiply: 0.1]
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-
-  # Wentylatory
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
     name: "${device_name} Nawiew %"
     address: 43
     register_type: holding
@@ -75,32 +56,6 @@ sensor:
     value_type: UINT16
     unit_of_measurement: "%"
 
-  # Ciśnienie i przepływy
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Ciśnienie nawiew"
-    address: 91
-    register_type: holding
-    value_type: UINT16
-    unit_of_measurement: "Pa"
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Przepływ nawiew"
-    address: 93
-    register_type: holding
-    value_type: UINT16
-    unit_of_measurement: "m³/h"
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Przepływ wyciąg"
-    address: 94
-    register_type: holding
-    value_type: UINT16
-    unit_of_measurement: "m³/h"
-
-  # Filtry
   - platform: modbus_controller
     modbus_controller_id: heatpex_aria
     name: "${device_name} Filtr nawiewu"
@@ -117,27 +72,14 @@ sensor:
     value_type: UINT16
     unit_of_measurement: "%"
 
-  # Status
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Status OK"
-    address: 2
-    register_type: holding
-    value_type: UINT16
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Awaria"
-    address: 3
-    register_type: holding
-    value_type: UINT16
-
 # ====================== STEROWANIE ======================
 switch:
   - platform: modbus_controller
     modbus_controller_id: heatpex_aria
     name: "${device_name} Bypass"
     address: 17
+    register_type: holding
+    value_type: UINT16
     write_lambda: |-
       if (x) {
         id(heatpex_aria).write_single_register(17, 1);
@@ -151,6 +93,8 @@ switch:
     modbus_controller_id: heatpex_aria
     name: "${device_name} Tryb Party"
     address: 34
+    register_type: holding
+    value_type: UINT16
     write_lambda: |-
       if (x) {
         id(heatpex_aria).write_single_register(34, 1);
@@ -172,14 +116,3 @@ select:
       3: "Bieg 1"
       4: "Bieg 2"
       5: "Bieg 3"
-
-number:
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Temperatura zadana Bieg 1"
-    address: 39
-    value_type: UINT16
-    min_value: 8
-    max_value: 30
-    step: 1
-    unit_of_measurement: "°C"
