@@ -78,7 +78,7 @@ switch:
     modbus_controller_id: heatpex_aria
     name: "${device_name} Bypass"
     address: 17
-    register_type: holding
+    register_type: holding     # <--- TO BYŁO BRAKOWAŁO
     value_type: UINT16
     write_lambda: |-
       if (x) {
@@ -86,21 +86,6 @@ switch:
         return true;
       } else {
         id(heatpex_aria).write_single_register(17, 0);
-        return true;
-      }
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpex_aria
-    name: "${device_name} Tryb Party"
-    address: 34
-    register_type: holding
-    value_type: UINT16
-    write_lambda: |-
-      if (x) {
-        id(heatpex_aria).write_single_register(34, 1);
-        return true;
-      } else {
-        id(heatpex_aria).write_single_register(34, 0);
         return true;
       }
 
