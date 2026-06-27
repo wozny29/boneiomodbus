@@ -1,0 +1,185 @@
+# =============================================
+# Heatpex Aria Vitale Platinum 450 - Modbus
+# =============================================
+
+
+modbus:
+  - id: heatpex_modbus
+    uart_id: heatpex_uart
+    send_wait_time: 200ms
+
+modbus_controller:
+  - id: heatpex_aria
+    address: 1
+    modbus_id: heatpex_modbus
+    command_throttle: 250ms
+    update_interval: 10s
+
+# ====================== SENSORY ======================
+sensor:
+  # Temperatury
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} T1 Nawiew"
+    address: 6
+    register_type: holding
+    value_type: INT16
+    filters: [multiply: 0.1]
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} T2 Wyciąg"
+    address: 7
+    register_type: holding
+    value_type: INT16
+    filters: [multiply: 0.1]
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} T3 Zewnętrzna"
+    address: 8
+    register_type: holding
+    value_type: INT16
+    filters: [multiply: 0.1]
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} T4 Wyrzut"
+    address: 9
+    register_type: holding
+    value_type: INT16
+    filters: [multiply: 0.1]
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+
+  # Wentylatory
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Nawiew %"
+    address: 43
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "%"
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Wyciąg %"
+    address: 44
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "%"
+
+  # Ciśnienie i przepływy
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Ciśnienie nawiew"
+    address: 91
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "Pa"
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Przepływ nawiew"
+    address: 93
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "m³/h"
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Przepływ wyciąg"
+    address: 94
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "m³/h"
+
+  # Filtry
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Filtr nawiewu"
+    address: 30
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "%"
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Filtr wyciągu"
+    address: 31
+    register_type: holding
+    value_type: UINT16
+    unit_of_measurement: "%"
+
+  # Status
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Status OK"
+    address: 2
+    register_type: holding
+    value_type: UINT16
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Awaria"
+    address: 3
+    register_type: holding
+    value_type: UINT16
+
+# ====================== STEROWANIE ======================
+switch:
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Bypass"
+    address: 17
+    write_lambda: |-
+      if (x) {
+        id(heatpex_aria).write_single_register(17, 1);
+        return true;
+      } else {
+        id(heatpex_aria).write_single_register(17, 0);
+        return true;
+      }
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Tryb Party"
+    address: 34
+    write_lambda: |-
+      if (x) {
+        id(heatpex_aria).write_single_register(34, 1);
+        return true;
+      } else {
+        id(heatpex_aria).write_single_register(34, 0);
+        return true;
+      }
+
+select:
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Tryb Pracy"
+    address: 4
+    value_type: UINT16
+    options:
+      0: "Auto"
+      2: "Ręczne"
+      3: "Bieg 1"
+      4: "Bieg 2"
+      5: "Bieg 3"
+
+number:
+  - platform: modbus_controller
+    modbus_controller_id: heatpex_aria
+    name: "${device_name} Temperatura zadana Bieg 1"
+    address: 39
+    value_type: UINT16
+    min_value: 8
+    max_value: 30
+    step: 1
+    unit_of_measurement: "°C"
